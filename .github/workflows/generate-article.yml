@@ -1,0 +1,55 @@
+name: Génération article IA
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Générer les articles Markdown vides
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          set -e
+          generated=0
+
+          for file in $(git diff --name-only origin/main...HEAD -- 'blog/*.md' 2>/dev/null || true); do
+            if [ ! -f "$file" ]; then
+              continue
+            fi
+            if [ ! -s "$file" ]; then
+              echo "→ Génération de $file"
+              node script/generate.js "$file"
+              generated=1
+            else
+              echo "→ Ignoré (non vide) : $file"
+            fi
+          done
+
+          if [ "$generated" -eq 0 ]; then
+            echo "Aucun fichier blog/*.md vide modifié dans cette PR."
+          fi
+
+      - name: Upload artefact articles générés
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-articles-${{ github.event.pull_request.number }}
+          path: blog/
+          if-no-files-found: warn
+          retention-days: 14

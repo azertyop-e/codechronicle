@@ -4,6 +4,7 @@
   "description": "Blog technique automatisé par IA — projet DevOps CodeChronicle",
   "main": "index.js",
   "scripts": {
+    "generate": "node script/generate.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": ["devops", "blog", "github-actions"],

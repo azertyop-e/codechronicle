@@ -16,7 +16,8 @@ Automatiser la création, la gestion et la publication d’articles techniques g
 codechronicle/
 ├── blog/              # Articles Markdown (nom du fichier = prompt IA)
 ├── public/            # Site statique HTML généré
-├── .github/workflows/ # Pipelines CI/CD (à venir)
+├── .github/workflows/ # Pipelines CI/CD
+├── script/            # Scripts Node (génération IA)
 ├── package.json
 └── README.md
 ```
@@ -25,7 +26,17 @@ codechronicle/
 
 ```bash
 npm install
+export OPENAI_API_KEY="votre-clé"
+node script/generate.js blog/2025-04-21-les-bases-de-github.md
 ```
+
+### Secret GitHub requis
+
+| Secret | Usage |
+|--------|--------|
+| `OPENAI_API_KEY` | Génération d’articles à l’ouverture d’une PR sur `main` |
+
+Le workflow [generate-article.yml](.github/workflows/generate-article.yml) détecte les fichiers `blog/*.md` **vides** ajoutés ou modifiés dans la PR, les enrichit via `script/generate.js`, puis publie le dossier `blog/` en artefact GitHub.
 
 ## Blog en production
 
@@ -34,7 +45,7 @@ npm install
 ## État du projet
 
 - [x] Initialisation Node.js et structure `blog/`
-- [ ] Génération automatique d’articles via GitHub Actions
+- [x] Génération automatique d’articles via GitHub Actions
 - [ ] Commentaire automatique sur les PR
 - [ ] Notification Discord au merge
 - [ ] Génération du site statique
