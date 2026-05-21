@@ -1,0 +1,36 @@
+name: Notification Discord
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "blog/**"
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Notifier Discord
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          BLOG_BASE_URL: ${{ secrets.BLOG_BASE_URL }}
+        run: |
+          files=$(git diff --name-only HEAD^ HEAD -- 'blog/*.md' 2>/dev/null || true)
+          if [ -z "$files" ]; then
+            echo "Aucun fichier blog/*.md dans ce push."
+            exit 0
+          fi
+          node script/discord-notify.js $files

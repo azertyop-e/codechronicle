@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "generate": "node script/generate.js",
+    "discord-notify": "node script/discord-notify.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": ["devops", "blog", "github-actions"],
