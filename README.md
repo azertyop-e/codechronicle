@@ -36,7 +36,7 @@ node script/generate.js blog/2025-04-21-les-bases-de-github.md
 |--------|--------|
 | `OPENAI_API_KEY` | Génération d’articles à l’ouverture d’une PR sur `main` |
 
-Le workflow [generate-article.yml](.github/workflows/generate-article.yml) détecte les fichiers `blog/*.md` **vides** ajoutés ou modifiés dans la PR, les enrichit via `script/generate.js`, puis publie le dossier `blog/` en artefact GitHub.
+Le workflow [generate-article.yml](.github/workflows/generate-article.yml) détecte les fichiers `blog/*.md` **vides** ajoutés ou modifiés dans la PR, les enrichit via `script/generate.js`, publie le dossier `blog/` en artefact GitHub, puis poste un **commentaire automatique** sur la PR (titre + résumé IA).
 
 ## Blog en production
 
@@ -46,7 +46,7 @@ Le workflow [generate-article.yml](.github/workflows/generate-article.yml) déte
 
 - [x] Initialisation Node.js et structure `blog/`
 - [x] Génération automatique d’articles via GitHub Actions
-- [ ] Commentaire automatique sur les PR
+- [x] Commentaire automatique sur les PR
 - [ ] Notification Discord au merge
 - [ ] Génération du site statique
 - [ ] Déploiement FTP sur InfinityFree

@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   generate:
@@ -53,3 +54,15 @@ jobs:
           path: blog/
           if-no-files-found: warn
           retention-days: 14
+
+      - name: Préparer le commentaire PR
+        run: |
+          files=$(git diff --name-only origin/main...HEAD -- 'blog/*.md' 2>/dev/null || true)
+          node script/build-pr-comment.js $files > .github/pr-comment.md
+
+      - name: Commenter la PR
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-path: .github/pr-comment.md
+          body-includes: "<!-- codechronicle-bot -->"
