@@ -4,19 +4,20 @@ on:
   pull_request:
     types: [closed]
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
   notify:
-    if: github.event.pull_request.merged == true
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          ref: ${{ github.event.pull_request.merge_commit_sha || github.sha }}
           fetch-depth: 0
 
       - name: Setup Node.js
@@ -29,11 +30,18 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           BLOG_BASE_URL: ${{ secrets.BLOG_BASE_URL }}
         run: |
-          base="${{ github.event.pull_request.base.sha }}"
-          merge="${{ github.event.pull_request.merge_commit_sha }}"
-          files=$(git diff --name-only "$base" "$merge" -- 'blog/*.md' 2>/dev/null || true)
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Mode test manuel — tous les articles avec frontmatter."
+            files=$(find blog -maxdepth 1 -name '*.md' -type f 2>/dev/null || true)
+          else
+            base="${{ github.event.pull_request.base.sha }}"
+            merge="${{ github.event.pull_request.merge_commit_sha }}"
+            files=$(git diff --name-only "$base" "$merge" -- 'blog/*.md' 2>/dev/null || true)
+          fi
+
           if [ -z "$files" ]; then
-            echo "Aucun fichier blog/*.md dans cette PR mergée."
+            echo "Aucun fichier blog/*.md trouvé."
             exit 0
           fi
+
           node script/discord-notify.js $files

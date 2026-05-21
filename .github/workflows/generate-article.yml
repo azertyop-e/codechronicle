@@ -6,7 +6,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
 
 jobs:
@@ -16,6 +16,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.head_ref }}
           fetch-depth: 0
 
       - name: Setup Node.js
@@ -24,6 +25,7 @@ jobs:
           node-version: "20"
 
       - name: Générer les articles Markdown vides
+        id: gen
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
@@ -43,9 +45,23 @@ jobs:
             fi
           done
 
+          echo "generated=$generated" >> "$GITHUB_OUTPUT"
           if [ "$generated" -eq 0 ]; then
             echo "Aucun fichier blog/*.md vide modifié dans cette PR."
           fi
+
+      - name: Commit et push les articles générés
+        if: steps.gen.outputs.generated == '1'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add blog/*.md
+          if git diff --staged --quiet; then
+            echo "Rien à committer."
+            exit 0
+          fi
+          git commit -m "chore(ci): article généré par IA [skip ci]"
+          git push
 
       - name: Upload artefact articles générés
         uses: actions/upload-artifact@v4
