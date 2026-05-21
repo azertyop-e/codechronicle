@@ -40,7 +40,15 @@ node script/generate.js blog/2025-04-21-les-bases-de-github.md
 
 Le workflow [generate-article.yml](.github/workflows/generate-article.yml) détecte les fichiers `blog/*.md` **vides** ajoutés ou modifiés dans la PR, les enrichit via `script/generate.js`, publie le dossier `blog/` en artefact GitHub, puis poste un **commentaire automatique** sur la PR (titre + résumé IA).
 
-Au **merge d’une PR vers `main`**, [discord-notify.yml](.github/workflows/discord-notify.yml) envoie un message Discord avec le titre, le résumé IA et le lien vers l’article (`BLOG_BASE_URL/articles/<slug>.html`). Les pushes directs sur `main` ne déclenchent pas ce workflow.
+Au **merge d’une PR vers `main`**, [discord-notify.yml](.github/workflows/discord-notify.yml) envoie un message Discord avec le titre, le résumé IA et le lien vers l’article (`BLOG_BASE_URL/articles/<slug>.html`).
+
+Les articles générés en CI sont **automatiquement commités** sur la branche de la PR (`generate-article.yml`), afin que le merge sur `main` contienne le contenu complet.
+
+### Tester la notification Discord
+
+1. Vérifier le secret `DISCORD_WEBHOOK_URL` dans GitHub Actions.
+2. Pousser `blog/2025-04-21-les-bases-de-github.md` (article de test inclus) sur une branche et merger la PR vers `main`, **ou**
+3. Aller dans **Actions → Notification Discord → Run workflow** (test manuel sur `main`).
 
 ## Blog en production
 
@@ -58,3 +66,4 @@ Au **merge d’une PR vers `main`**, [discord-notify.yml](.github/workflows/disc
 ## Licence
 
 ISC
+Test
