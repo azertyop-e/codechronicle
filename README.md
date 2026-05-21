@@ -58,4 +58,3 @@ Au **merge dans `main`**, [discord-notify.yml](.github/workflows/discord-notify.
 ## Licence
 
 ISC
-test
