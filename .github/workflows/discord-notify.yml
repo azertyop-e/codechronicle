@@ -2,7 +2,7 @@ name: Notification Discord
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [closed]
     branches: [main]
 
 permissions:
