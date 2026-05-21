@@ -40,7 +40,7 @@ node script/generate.js blog/2025-04-21-les-bases-de-github.md
 
 Le workflow [generate-article.yml](.github/workflows/generate-article.yml) détecte les fichiers `blog/*.md` **vides** ajoutés ou modifiés dans la PR, les enrichit via `script/generate.js`, publie le dossier `blog/` en artefact GitHub, puis poste un **commentaire automatique** sur la PR (titre + résumé IA).
 
-Au **merge dans `main`**, [discord-notify.yml](.github/workflows/discord-notify.yml) envoie un message Discord avec le titre, le résumé IA et le lien vers l’article (`BLOG_BASE_URL/articles/<slug>.html`).
+Au **merge d’une PR vers `main`**, [discord-notify.yml](.github/workflows/discord-notify.yml) envoie un message Discord avec le titre, le résumé IA et le lien vers l’article (`BLOG_BASE_URL/articles/<slug>.html`). Les pushes directs sur `main` ne déclenchent pas ce workflow.
 
 ## Blog en production
 
@@ -58,4 +58,3 @@ Au **merge dans `main`**, [discord-notify.yml](.github/workflows/discord-notify.
 ## Licence
 
 ISC
-test

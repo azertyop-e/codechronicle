@@ -1,22 +1,23 @@
 name: Notification Discord
 
 on:
-  push:
+  pull_request:
+    types: [opened, synchronize, reopened]
     branches: [main]
-    paths:
-      - "blog/**"
 
 permissions:
   contents: read
 
 jobs:
   notify:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -28,9 +29,11 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           BLOG_BASE_URL: ${{ secrets.BLOG_BASE_URL }}
         run: |
-          files=$(git diff --name-only HEAD^ HEAD -- 'blog/*.md' 2>/dev/null || true)
+          base="${{ github.event.pull_request.base.sha }}"
+          merge="${{ github.event.pull_request.merge_commit_sha }}"
+          files=$(git diff --name-only "$base" "$merge" -- 'blog/*.md' 2>/dev/null || true)
           if [ -z "$files" ]; then
-            echo "Aucun fichier blog/*.md dans ce push."
+            echo "Aucun fichier blog/*.md dans cette PR mergée."
             exit 0
           fi
           node script/discord-notify.js $files
