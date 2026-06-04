@@ -32,23 +32,21 @@ jobs:
           set -e
           generated=0
 
-          for file in $(git diff --name-only origin/main...HEAD -- 'blog/*.md' 2>/dev/null || true); do
-            if [ ! -f "$file" ]; then
-              continue
-            fi
+          echo "📋 Fichiers modifiés :"
+          git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} -- 'blog/*.md' || echo "Aucun diff trouvé"
+
+          for file in $(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} -- 'blog/*.md' 2>/dev/null || true); do
+            echo "📝 Traitement : $file"
             if [ ! -s "$file" ]; then
-              echo "→ Génération de $file"
-              node script/generate.js "$file"
+              echo "✅ Fichier vide , génération..."
+              node script/generate.js "$file" || echo "❌ Erreur génération"
               generated=1
             else
-              echo "→ Ignoré (non vide) : $file"
+              echo "⏭️  Fichier non vide"
             fi
           done
 
           echo "generated=$generated" >> "$GITHUB_OUTPUT"
-          if [ "$generated" -eq 0 ]; then
-            echo "Aucun fichier blog/*.md vide modifié dans cette PR."
-          fi
 
       - name: Commit et push les articles générés
         if: steps.gen.outputs.generated == '1'
