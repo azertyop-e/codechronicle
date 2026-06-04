@@ -33,9 +33,9 @@ jobs:
           generated=0
 
           echo "📋 Fichiers modifiés :"
-          git diff --name-only origin/main...HEAD -- 'blog/*.md' 2>/dev/null || echo "Aucun diff trouvé"
+          git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} -- 'blog/*.md' || echo "Aucun diff trouvé"
 
-          for file in $(git diff --name-only origin/main...HEAD -- 'blog/*.md' 2>/dev/null || true); do
+          for file in $(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} -- 'blog/*.md' 2>/dev/null || true); do
             echo "📝 Traitement : $file"
             if [ ! -f "$file" ]; then
               echo "❌ Fichier n'existe pas"
