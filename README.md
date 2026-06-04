@@ -28,7 +28,10 @@ codechronicle/
 npm install
 export OPENAI_API_KEY="votre-clé"
 node script/generate.js blog/2025-04-21-les-bases-de-github.md
+npm run build
 ```
+
+Le script `npm run build` lit les fichiers `blog/*.md` (avec frontmatter) et génère le site dans `public/` : `index.html` et une page par article dans `public/articles/<slug>.html`.
 
 ### Secret GitHub requis
 
@@ -60,7 +63,7 @@ Les articles générés en CI sont **automatiquement commités** sur la branche 
 - [x] Génération automatique d’articles via GitHub Actions
 - [x] Commentaire automatique sur les PR
 - [x] Notification Discord au merge
-- [ ] Génération du site statique
+- [x] Génération du site statique
 - [ ] Déploiement FTP sur InfinityFree
 
 ## Licence
