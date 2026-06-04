@@ -73,8 +73,13 @@ async function main() {
     process.exit(1);
   }
 
-  const files = process.argv.slice(2);
-  const articles = files.map(parseArticleFile).filter(Boolean);
+    const files = process.argv.slice(2);
+    console.log("📋 Fichiers à traiter :", files);
+    const articles = files.map((f) => {
+      const parsed = parseArticleFile(f);
+      console.log(`  ${f} → ${parsed ? "✅ OK" : "❌ Pas de frontmatter"}`);
+      return parsed;
+    }).filter(Boolean);
 
   if (articles.length === 0) {
     console.log("[skip] Aucun article avec frontmatter à notifier.");
