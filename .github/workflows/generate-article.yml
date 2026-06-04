@@ -37,10 +37,6 @@ jobs:
 
           for file in $(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} -- 'blog/*.md' 2>/dev/null || true); do
             echo "📝 Traitement : $file"
-            if [ ! -f "$file" ]; then
-              echo "❌ Fichier n'existe pas"
-              continue
-            fi
             if [ ! -s "$file" ]; then
               echo "✅ Fichier vide , génération..."
               node script/generate.js "$file" || echo "❌ Erreur génération"
