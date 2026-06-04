@@ -29,8 +29,7 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          ls
-
+          ls -la blog/*.md
       - name: Commit et push les articles générés
         if: steps.gen.outputs.generated == '1'
         run: |
