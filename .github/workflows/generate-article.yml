@@ -29,7 +29,25 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          ls -la blog/*.md
+          set -e
+          generated=0
+
+          echo "📋 Fichiers modifiés :"
+          git show --name-only --pretty=format: ${{ github.event.pull_request.head.sha }} -- 'blog/*.md' || echo "Aucun fichier trouvé"
+
+          for file in $(git show --name-only --pretty=format: ${{ github.event.pull_request.head.sha }} -- 'blog/*.md' 2>/dev/null || true); do
+            echo "📝 Traitement : $file"
+            if [ ! -s "$file" ]; then
+              echo "✅ Fichier vide, génération..."
+              node script/generate.js "$file" || echo "❌ Erreur génération"
+              generated=1
+            else
+              echo "⏭️  Fichier non vide"
+            fi
+          done
+
+          echo "generated=$generated" >> "$GITHUB_OUTPUT"
+
       - name: Commit et push les articles générés
         if: steps.gen.outputs.generated == '1'
         run: |
